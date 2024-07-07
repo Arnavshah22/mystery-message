@@ -1,3 +1,4 @@
+import { sendVerificationEmail } from "@/helper/sendVerificationEmail";
 import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 
@@ -63,12 +64,37 @@ export async function POST(request:Request){
 
         }
         //send verification email
-        const emailResponse=await 
+        const emailResponse=await sendVerificationEmail(
+            email,
+            username,
+            verifyCode
+        );
+        if(!emailResponse.success){
+            return Response.json({
+                success:false,
+                message:emailResponse.message,
 
+            },{
+                status:500
+            })
+        }
+        return Response.json({
+            success:true,
+            message:'User registered Successfully.Please verify your account',
 
-
+        },{
+            status:201,
+        }
+    );
     } catch (error) {
-        
+             console.error('Error registrating user',error)
+             return Response.json({
+                success:false,
+                message:"Something Went Wrong or Error while Registration"
+             },{
+                status:500
+             }
+            )  
     }
     
 }
